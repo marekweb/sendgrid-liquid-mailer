@@ -1,7 +1,13 @@
 const axios = require('axios');
+const liquid = require('liquidjs');
+const liquidEngine = liquid();
+const checkOptions = require('check-options');
 
 class SendgridLiquidMailer {
   constructor(sendgridApiKey) {
+    if (!sendgridApiKey) {
+      throw new Error('Missing Sendgrid API key');
+    }
     this.sendgridApiKey = sendgridApiKey;
   }
 
@@ -20,14 +26,16 @@ class SendgridLiquidMailer {
     );
   }
 
-  sendSimpleEmail({
-    toAddress,
-    toName,
-    fromAddress,
-    fromName,
-    subject,
-    plainTextBody
-  }) {
+  sendSimpleEmail(options) {
+    const {
+      toAddress,
+      toName,
+      fromAddress,
+      fromName,
+      subject,
+      plainTextBody
+    } = options;
+
     const mail = {
       from: { email: fromAddress, name: fromName },
       personalizations: [{ to: [{ email: toAddress, name: toName }] }],
@@ -39,12 +47,21 @@ class SendgridLiquidMailer {
         }
       ]
     };
-    return this.mail(mail);
+    return this.send(mail);
   }
 
   sendLiquidEmail(options) {
-    const plainTextBody = liquid.parseAndRender(options.template, options.data);
-    return this.sendSimpleEmail({ ...options, plaimTextBody });
+    options = checkOptions(
+      options,
+      ['template', 'toAddress', 'toName', 'fromAddress', 'fromName', 'subject'],
+      { data: {} }
+    );
+
+    return liquidEngine
+      .parseAndRender(options.template, options.data)
+      .then(plainTextBody => {
+        return this.sendSimpleEmail({ ...options, plainTextBody });
+      });
   }
 }
 
