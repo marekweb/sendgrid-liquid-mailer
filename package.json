@@ -1,0 +1,15 @@
+{
+  "name": "sendgrid-liquid-mailer",
+  "version": "0.1.0",
+  "license": "MIT",
+  "scripts": {
+    "format": "prettier --write --single-quote '**/*.js'"
+  },
+  "dependencies": {
+    "axios": "^0.17.1",
+    "liquidjs": "^2.0.2"
+  },
+  "devDependencies": {
+    "prettier": "^1.8.2"
+  }
+}
