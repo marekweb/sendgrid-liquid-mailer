@@ -2,6 +2,7 @@ const axios = require('axios');
 const liquid = require('liquidjs');
 const liquidEngine = liquid();
 const checkOptions = require('check-options');
+const Promise = require('bluebird');
 
 class SendgridLiquidMailer {
   constructor(sendgridApiKey) {
@@ -53,15 +54,16 @@ class SendgridLiquidMailer {
   sendLiquidEmail(options) {
     options = checkOptions(
       options,
-      ['template', 'toAddress', 'toName', 'fromAddress', 'fromName', 'subject'],
+      ['bodyTemplate', 'toAddress', 'toName', 'fromAddress', 'fromName', 'subjectTemplate'],
       { data: {} }
     );
 
-    return liquidEngine
-      .parseAndRender(options.template, options.data)
-      .then(plainTextBody => {
-        return this.sendSimpleEmail({ ...options, plainTextBody });
-      });
+    return Promise.props({
+      body: parseAndRender(options.bodyTemplate, options.data),
+      subject: parseAndRender(options.subjectTemplate, options.data)
+    }).then(({body, subject}) => {
+      return this.sendSimpleEmail({ ...options, plainTextBody: body, subject });
+    });
   }
 }
 

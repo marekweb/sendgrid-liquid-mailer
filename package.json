@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "axios": "^0.17.1",
+    "bluebird": "^3.5.1",
     "check-options": "^1.1.0",
     "liquidjs": "^2.0.2"
   },
