@@ -20,26 +20,27 @@ class SendgridLiquidMailer {
       }
     };
 
-    return axios.post(
-      'https://api.sendgrid.com/v3/mail/send',
-      mail,
-      requestOptions
-    );
+    return axios.post('https://api.sendgrid.com/v3/mail/send', mail, requestOptions);
   }
 
   sendSimpleEmail(options) {
-    const {
-      toAddress,
-      toName,
-      fromAddress,
-      fromName,
-      subject,
-      plainTextBody
-    } = options;
+    const { toAddress, toName, fromAddress, fromName, bccAddress, subject, plainTextBody } = options;
 
     const mail = {
-      from: { email: fromAddress, name: fromName },
-      personalizations: [{ to: [{ email: toAddress, name: toName }] }],
+      from: {
+        email: fromAddress,
+        name: fromName
+      },
+      personalizations: [
+        {
+          to: [
+            {
+              email: toAddress,
+              name: toName
+            }
+          ]
+        }
+      ],
       subject: subject,
       content: [
         {
@@ -48,6 +49,17 @@ class SendgridLiquidMailer {
         }
       ]
     };
+
+    if (bccAddress) {
+      mail.personalizations.push({
+        bcc: [
+          {
+            email: bccAddress
+          }
+        ]
+      });
+    }
+
     return this.send(mail);
   }
 
@@ -55,14 +67,21 @@ class SendgridLiquidMailer {
     options = checkOptions(
       options,
       ['bodyTemplate', 'toAddress', 'toName', 'fromAddress', 'fromName', 'subjectTemplate'],
-      { data: {} }
+      {
+        data: {},
+        bccAddress: undefined
+      }
     );
 
     return Promise.props({
-      body: parseAndRender(options.bodyTemplate, options.data),
-      subject: parseAndRender(options.subjectTemplate, options.data)
-    }).then(({body, subject}) => {
-      return this.sendSimpleEmail({ ...options, plainTextBody: body, subject });
+      body: liquidEngine.parseAndRender(options.bodyTemplate, options.data),
+      subject: liquidEngine.parseAndRender(options.subjectTemplate, options.data)
+    }).then(({ body, subject }) => {
+      return this.sendSimpleEmail({
+        ...options,
+        plainTextBody: body,
+        subject
+      });
     });
   }
 }
