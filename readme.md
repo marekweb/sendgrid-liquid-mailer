@@ -9,13 +9,14 @@ const SendgridLiquidMailer = require('sendgrid-liquid-mailer');
 
 const mailer = new SendgridLiquidMailer(SENDGRID_API_KEY);
 const email = {
-    template: `Hello, {{name}}`,
+    bodyTemplate: `Hello, {{name}}`,
     data: {name: 'world'},
     fromAddress: 'from@example.com',
     fromName: 'Example Sender',
     toAddress: 'recipient@example.com',
+    bccAddress: 'bcc@example.com',
     toName: 'A Recipient',
-    subject: 'You are a winner.'
+    subjectTemplate: 'You are a winner.'
 };
 
 const result = mailer.sendLiquidEmail(email);
