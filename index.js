@@ -26,20 +26,30 @@ class SendgridLiquidMailer {
   sendSimpleEmail(options) {
     const { toAddress, toName, fromAddress, fromName, bccAddress, subject, plainTextBody } = options;
 
+    const personalization = {
+      to: [
+        {
+          email: toAddress,
+          name: toName
+        }
+      ]
+    };
+
+    if (bccAddress) {
+      personalization.bcc = [
+        {
+          email: bccAddress
+        }
+      ];
+    }
+
     const mail = {
       from: {
         email: fromAddress,
         name: fromName
       },
       personalizations: [
-        {
-          to: [
-            {
-              email: toAddress,
-              name: toName
-            }
-          ]
-        }
+        personalization
       ],
       subject: subject,
       content: [
@@ -49,16 +59,6 @@ class SendgridLiquidMailer {
         }
       ]
     };
-
-    if (bccAddress) {
-      mail.personalizations.push({
-        bcc: [
-          {
-            email: bccAddress
-          }
-        ]
-      });
-    }
 
     return this.send(mail);
   }
