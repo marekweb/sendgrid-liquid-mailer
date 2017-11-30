@@ -1,6 +1,6 @@
 {
   "name": "sendgrid-liquid-mailer",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -17,7 +17,7 @@
     "liquidjs": "^2.0.2"
   },
   "devDependencies": {
-    "ava": "^0.24.0",    
+    "ava": "^0.24.0",
     "prettier": "^1.8.2"
   }
 }
